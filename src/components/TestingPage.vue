@@ -1,64 +1,60 @@
 <template>
   <div class="container">
-    <h1>{{ test.title }}</h1>
-    <ul>
-      <li class="question" v-for="(question,questionIndex) in test.questions " :key=question>
+    <h1 v-if="!isFinished">{{ test.title }}</h1>
+    <ul v-if="!isFinished">
+      <li class="question" v-for="(question, questionIndex) in test.questions" :key="questionIndex">
         {{ question.text }}
         <ul>
-          <li v-for="(answer,answerIndex) in question.answers " :key="answer">
+          <li v-for="(answer, answerIndex) in question.answers" :key="answerIndex">
             <div v-if="question.multi">
-              
-              <input @click="answerQuestion(questionIndex,answerIndex)" type="checkbox" >
+              <input @click="answerQuestion(questionIndex, answerIndex)" type="checkbox">
               {{ answer.text }}
             </div>
             <div v-else>
-              <input type="radio" @click="answerQuestion(questionIndex,answerIndex)" :name="question.text">
+              <input type="radio" @click="answerQuestion(questionIndex, answerIndex)" :name="question.text">
               {{ answer.text }}
             </div>
-            
           </li>
-
         </ul>
       </li>
-
     </ul>
+    <h1 v-if="isFinished">Результат</h1>
+    <h2 v-if="score !== null">Правильних відповідей: {{ score }} / {{ test.questions.length }}</h2>
+    <ul v-if="isFinished">
+  <li class="question" v-for="(question, questionIndex) in test.questions" :key="questionIndex">
+    {{ question.text }}
     <ul>
-      <li class="question" v-for="(question,) in test.questions " :key=question>
-        {{ question.text }}
-        <ul>
-          <li v-for="(answer,) in question.answers " :key="answer">
-            <div v-if="question.multi">
-              <p :style="answer.truly?'color:green':'color:red'">{{ answer.selected?'obrano':'' }} {{ answer.text }}</p>
-             
-              
-            </div>
-            <div v-else>
-              <p :style="answer.truly?'color:green':'color:red'"> {{ answer.selected?'obrano':'' }}{{ answer.text }}</p>
-            </div>
-            
-          </li>
-
-        </ul>
+      <li v-for="(answer, answerIndex) in question.answers" :key="answerIndex">
+        <div v-if="question.multi">
+          <p :style="{ color: answer.selected && answer.truly ? 'green' : 'red', 'background-color': answer.selected ? (answer.truly ? 'springgreen' : 'coral') : '' }">{{ answer.text }}</p>
+        </div>
+        <div v-else>
+          <p :style="{ color: answer.selected && answer.truly ? 'green' : 'red', 'background-color': answer.selected ? (answer.truly ? 'springgreen' : 'coral') : '' }">{{ answer.text }}</p>
+        </div>
       </li>
-
     </ul>
-    <button>Завершити тестування</button>
+  </li>
+</ul>
+    <button @click="finishTest" v-if="!isFinished">Завершити тестування</button>
+    <h2 v-if="isFinished" >
+      <router-link to="/">
+        <button >На головну сторінку</button>
+      </router-link>
+      <button  @click="retakeTest()">Розпочати тестування заново</button>
+    </h2>
   </div>
 </template>
 
 <script>
-
 import firebase from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 
 export default {
-  components: {
-
-  },
-
+  components: {},
   data() {
     return {
-      score:0,
+      isFinished: false,
+      score: null,
       test: {
         title: "",
         questions: [],
@@ -66,18 +62,56 @@ export default {
     };
   },
   methods: {
-    answerQuestion(questionIndex,answerIndex){
-      this.test.questions[questionIndex].answers[answerIndex].selected=true
+    
+    retakeTest() {
       
+      this.isFinished = false;
+      this.score = null;
+      this.test.questions.forEach((question) => {
+        question.answers.forEach((answer) => {
+          answer.selected = false;
+        });
+      });
     },
+
+    answerQuestion(questionIndex, answerIndex) {
+    const question = this.test.questions[questionIndex];
+
+    if (question.multi) {
+      
+      question.answers[answerIndex].selected = !question.answers[answerIndex].selected;
+    } else {
+      
+      question.answers.forEach((answer, index) => {
+        question.answers[index].selected = index === answerIndex;
+      });
+    }
+  },
     async getTest() {
-      const query = await getDoc(
-        doc(firebase.db, "tests", this.$route.params.id)
-      );
+      const query = await getDoc(doc(firebase.db, "tests", this.$route.params.id));
 
       if (query.data()) {
         this.test = query.data();
       }
+    },
+    finishTest() {
+      this.score = this.calculateScore();
+      this.isFinished = true; 
+    },
+    calculateScore() {
+      let score = 0;
+
+      this.test.questions.forEach((question) => {
+        const correctAnswers = question.answers.filter((answer) => answer.truly).map((answer) => answer.text);
+        const selectedAnswers = question.answers.filter((answer) => answer.selected && answer.truly).map((answer) => answer.text);
+
+       
+        if (JSON.stringify(correctAnswers) === JSON.stringify(selectedAnswers)) {
+          score++;
+        }
+      });
+
+      return score;
     },
   },
   mounted() {
@@ -85,26 +119,32 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   background-color: PeachPuff;
 }
-.question{
-  background-color: rgb(253, 248, 248);
+.question {
+  background-color: white;
   margin-top: 20px;
-  border-radius: 10px  ;
+  border-radius: 10px;
   padding: 10px;
-  border: 2px solid rgb(167, 165, 165);
+  border: 2px solid black;
+  
 }
-li{
+li {
   list-style-type: none;
 }
-ul{
+ul {
   padding: 0px;
+}
+button{
+  background-color: white;
+  border: solid black 1px;
+  border-radius: 5px;
 }
 </style>

@@ -5,94 +5,69 @@
       <p>Назва тесту</p>
       <input v-model="title" />
     </label>
-    <button @click="changeMulti">
-      З декількома правильними відповідями: {{ JSON.stringify(this.form.multi) }}
-    </button>
-    <form @submit.prevent="createQuestion">
-      <div class="label-wrapper">
-        <label>
-          <p>Запитання</p>
-          <input v-model="form.question" />
-        </label>
-      </div>
-      <div class="label-wrapper">
-        <label>
-          <p>Відповідь</p>
-          <input v-model="form.answers[0].text" />
-        </label>
-        <label>
-          <p>Правильна</p>
-          <input
-            type="checkbox"
-            :checked="form.answers[0].truly"
-            @change="changeTruly(0)"
-          />
-        </label>
-      </div>
-      <div class="label-wrapper">
-        <label>
-          <p>Відповідь</p>
-          <input v-model="form.answers[1].text" />
-        </label>
-        <label>
-          <p>Правильна</p>
-          <input
-            type="checkbox"
-            :checked="form.answers[1].truly"
-            @change="changeTruly(1)"
-          />
-        </label>
-      </div>
-      <div class="label-wrapper">
-        <label>
-          <p>Відповідь</p>
-          <input v-model="form.answers[2].text" />
-        </label>
-        <label>
-          <p>Правильна</p>
-          <input
-            type="checkbox"
-            :checked="form.answers[2].truly"
-            @change="changeTruly(2)"
-          />
-        </label>
-      </div>
-      <div class="label-wrapper">
-        <label>
-          <p>Відповідь</p>
-          <input v-model="form.answers[3].text" />
-        </label>
-        <label>
-          <p>Правильна</p>
-          <input
-            type="checkbox"
-            :checked="form.answers[3].truly"
-            @change="changeTruly(3)"
-          />
-        </label>
-      </div>
-      <button>Створити питання</button>
-    </form>
 
     <ul>
-      <li v-for="(test, index) in tests" :key="index">
-        <h2>{{ test.text }}</h2>
+      <li class="test-item" v-for="(test, index) in tests" :key="index">
+        <h2>
+          {{ test.text }}
+          <button @click="deleteQuestion(index)">Видалити</button>
+        </h2>
         <ol>
           <li v-for="(answer, index) in test.answers" :key="index">
-            <h3>{{ answer.text }}</h3>
-            <h4>Правильний: {{ JSON.stringify(answer.truly) }}</h4>
+            <h3 :style="answer.truly ? 'color:green' : 'color:red'">
+              {{ answer.text }}
+            </h3>
           </li>
         </ol>
       </li>
+      <li class="form-item">
+        <form @submit.prevent="createQuestion">
+          <div class="label-wrapper">
+            <label>
+              <p>Запитання</p>
+              <input v-model="form.question" />
+            </label>
+            <button
+              style="margin-left: 20px"
+              type="button"
+              @click="changeMulti"
+            >
+              Декілька вірних відповідей:
+              {{ this.form.multi ? "Так" : "Ні" }}
+            </button>
+          </div>
+
+          <div style="display: flex; margin-top: 20px">
+            <div
+              v-for="(answer, index) in form.answers"
+              :key="index"
+              class="label-wrapper"
+              style="margin-right: 20px"
+            >
+              <label>
+                <p>Відповідь</p>
+                <input v-model="form.answers[index].text" />
+              </label>
+              <input
+                style="margin-left: 5px"
+                type="checkbox"
+                :checked="form.answers[index].truly"
+                @change="changeTruly(index)"
+              />
+            </div>
+          </div>
+        </form>
+      </li>
+      <button @click="createQuestion">Створити питання</button>
     </ul>
 
-    <button @click="createTest">Завершити свторення тестування</button>
+    <button @click="createTest">Завершити свторення тесту</button>
   </div>
 </template>
 
 <script>
-// import { addDoc, collection } from "firebase/firestore";
-// import firebase from "../firebase";
+import { addDoc, collection } from "firebase/firestore";
+import firebase from "../firebase";
 
 const getInitialData = () => ({
   question: "",
@@ -127,19 +102,16 @@ export default {
       }
     },
     resetCheckedAnswers() {
-      this.form.answers = this.form.answers.map((el) => ({ ...el, truly: false }));
+      this.form.answers = this.form.answers.map((el) => ({
+        ...el,
+        truly: false,
+      }));
     },
-    // resetForm() {
-    //   this.answers = [
-    //     { text: "", truly: false },
-    //     { text: "", truly: false },
-    //     { text: "", truly: false },
-    //     { text: "", truly: false },
-    //   ];
-    //   this.multi = false;
-    //   this.question = "";
-    // },
     createQuestion() {
+      if (this.checkForm()) {
+        return alert("Одне з полів пусте");
+      }
+
       this.tests.push({
         text: this.form.question,
         answers: this.form.answers,
@@ -149,11 +121,18 @@ export default {
       this.resetForm();
     },
     async createTest() {
-      console.log(this.title, this.tests);
-      // await addDoc(collection(firebase.db, "tests"), {
-      //   title: this.title,
-      //   questions: this.tests,
-      // });
+      if (this.checkFullTest()) {
+        return alert("Тест не заповнений");
+      }
+
+      await addDoc(collection(firebase.db, "tests"), {
+        title: this.title,
+        questions: this.tests,
+      });
+
+      alert(`Тест ${this.title} успішно створено!`);
+
+      this.$router.push("/");
     },
     changeTruly(index) {
       if (!this.form.answers[index]) {
@@ -170,12 +149,64 @@ export default {
         this.form.answers[index].truly = false;
       }
     },
+    deleteQuestion(index) {
+      this.tests = this.tests.filter((el, i) => i !== index);
+    },
+    checkForm() {
+      return (
+        this.form.question.trim() === "" ||
+        this.form.answers.some((el) => el.text.trim() === "") ||
+        this.form.answers.every((el) => el.truly === false)
+      );
+    },
+    checkFullTest() {
+      return this.title.trim() === "" || this.tests.length === 0;
+    },
   },
 };
 </script>
 
 <style>
+.test-item {
+  background-color: rgb(189, 189, 189);
+  border-radius: 5px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.form-item {
+  background-color: rgb(189, 189, 189);
+  padding: 20px;
+  margin-top: 30px;
+  border-radius: 5px;
+}
 .label-wrapper {
   display: flex;
+  align-items: flex-end;
+}
+
+ul > li {
+  list-style-type: none;
+}
+ul {
+  padding: 0;
+}
+
+button {
+  margin-top: 10px;
+}
+
+input,
+button {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid rgb(189, 189, 189);
+}
+input {
+  margin: 0;
+}
+p {
+  margin: 0;
+  margin-top: 10px;
 }
 </style>

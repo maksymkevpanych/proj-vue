@@ -3,10 +3,6 @@
     <h1>Вхід</h1>
 
     <div class="form-container">
-      <label>
-        <span>Пошта</span>
-        <input v-model="email" />
-      </label>
       <button @click="signInAsUser">Увійти як користувач</button>
       <button @click="signInAsAdmin">Увійти як адміністратор</button>
     </div>
@@ -15,25 +11,35 @@
 
 <script>
 import { mapMutations } from "vuex";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import firebase from "../firebase";
+
+const auth = getAuth(firebase.frApp);
+const provider = new GoogleAuthProvider();
 
 export default {
   name: "LoginPage",
-  data() {
-    return {
-      email: "",
-    };
-  },
   methods: {
     ...mapMutations(["signIn"]),
     signInAsUser() {
-      this.signIn({ email: this.email, role: "user" });
-
-      this.$router.push("/");
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          this.signIn({ email: result.user.email, role: "user" });
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => this.$router.push("/"));
     },
     signInAsAdmin() {
-      this.signIn({ email: this.email, role: "admin" });
-
-      this.$router.push("/");
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          this.signIn({ email: result.user.email, role: "admin" });
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => this.$router.push("/"));
     },
   },
 };

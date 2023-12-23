@@ -17,9 +17,13 @@ export default {
 </script>
 
 <style>
-.container {
+body {
+  min-height: 100vh;
   background-color: PeachPuff;
-  height: 100vh;
+
+}
+
+.container {
   padding: 2%;
 }
 * {

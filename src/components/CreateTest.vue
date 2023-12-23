@@ -6,25 +6,25 @@
       <input v-model="title" />
     </label>
     <button @click="changeMulti">
-      З декількома правильними відповідями: {{ JSON.stringify(this.multi) }}
+      З декількома правильними відповідями: {{ JSON.stringify(this.form.multi) }}
     </button>
     <form @submit.prevent="createQuestion">
       <div class="label-wrapper">
         <label>
           <p>Запитання</p>
-          <input v-model="question" />
+          <input v-model="form.question" />
         </label>
       </div>
       <div class="label-wrapper">
         <label>
           <p>Відповідь</p>
-          <input v-model="answers[0].text" />
+          <input v-model="form.answers[0].text" />
         </label>
         <label>
           <p>Правильна</p>
           <input
             type="checkbox"
-            :checked="answers[0].truly"
+            :checked="form.answers[0].truly"
             @change="changeTruly(0)"
           />
         </label>
@@ -32,13 +32,13 @@
       <div class="label-wrapper">
         <label>
           <p>Відповідь</p>
-          <input v-model="answers[1].text" />
+          <input v-model="form.answers[1].text" />
         </label>
         <label>
           <p>Правильна</p>
           <input
             type="checkbox"
-            :checked="answers[1].truly"
+            :checked="form.answers[1].truly"
             @change="changeTruly(1)"
           />
         </label>
@@ -46,13 +46,13 @@
       <div class="label-wrapper">
         <label>
           <p>Відповідь</p>
-          <input v-model="answers[2].text" />
+          <input v-model="form.answers[2].text" />
         </label>
         <label>
           <p>Правильна</p>
           <input
             type="checkbox"
-            :checked="answers[2].truly"
+            :checked="form.answers[2].truly"
             @change="changeTruly(2)"
           />
         </label>
@@ -60,13 +60,13 @@
       <div class="label-wrapper">
         <label>
           <p>Відповідь</p>
-          <input v-model="answers[3].text" />
+          <input v-model="form.answers[3].text" />
         </label>
         <label>
           <p>Правильна</p>
           <input
             type="checkbox"
-            :checked="answers[3].truly"
+            :checked="form.answers[3].truly"
             @change="changeTruly(3)"
           />
         </label>
@@ -91,75 +91,83 @@
 </template>
 
 <script>
-import { addDoc, collection } from "firebase/firestore";
-import firebase from "../firebase";
+// import { addDoc, collection } from "firebase/firestore";
+// import firebase from "../firebase";
+
+const getInitialData = () => ({
+  question: "",
+  answers: [
+    { text: "", truly: false },
+    { text: "", truly: false },
+    { text: "", truly: false },
+    { text: "", truly: false },
+  ],
+  multi: false,
+});
 
 export default {
   data() {
     return {
+      form: {
+        ...getInitialData(),
+      },
       title: "",
-      question: "",
-      answers: [
-        { text: "", truly: false },
-        { text: "", truly: false },
-        { text: "", truly: false },
-        { text: "", truly: false },
-      ],
-      multi: false,
       tests: [],
-      // { text: "", variants: [], multi: true }
     };
   },
   methods: {
+    resetForm() {
+      this.form = getInitialData();
+    },
     changeMulti() {
-      this.multi = !this.multi;
+      this.form.multi = !this.form.multi;
 
       if (!this.multi) {
         this.resetCheckedAnswers();
       }
     },
     resetCheckedAnswers() {
-      this.answers = this.answers.map((el) => ({ ...el, truly: false }));
+      this.form.answers = this.form.answers.map((el) => ({ ...el, truly: false }));
     },
-    resetForm() {
-      this.answers = [
-        { text: "", truly: false },
-        { text: "", truly: false },
-        { text: "", truly: false },
-        { text: "", truly: false },
-      ];
-      this.multi = false;
-      this.question = "";
-    },
+    // resetForm() {
+    //   this.answers = [
+    //     { text: "", truly: false },
+    //     { text: "", truly: false },
+    //     { text: "", truly: false },
+    //     { text: "", truly: false },
+    //   ];
+    //   this.multi = false;
+    //   this.question = "";
+    // },
     createQuestion() {
       this.tests.push({
-        text: this.question,
-        answers: this.answers,
-        multi: this.multi,
+        text: this.form.question,
+        answers: this.form.answers,
+        multi: this.form.multi,
       });
 
       this.resetForm();
     },
     async createTest() {
-        console.log(this.title, this.tests)
-      await addDoc(collection(firebase.db, "tests"), {
-        title: this.title,
-        questions: this.tests,
-      });
+      console.log(this.title, this.tests);
+      // await addDoc(collection(firebase.db, "tests"), {
+      //   title: this.title,
+      //   questions: this.tests,
+      // });
     },
     changeTruly(index) {
-      if (!this.answers[index]) {
+      if (!this.form.answers[index]) {
         return;
       }
 
-      if (!this.answers[index].truly) {
-        if (!this.multi) {
+      if (!this.form.answers[index].truly) {
+        if (!this.form.multi) {
           this.resetCheckedAnswers();
         }
 
-        this.answers[index].truly = true;
+        this.form.answers[index].truly = true;
       } else {
-        this.answers[index].truly = false;
+        this.form.answers[index].truly = false;
       }
     },
   },

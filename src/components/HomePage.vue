@@ -1,31 +1,43 @@
-o<template>
-    <div class="all">
-    <div class="wrapper">
-      <div class="centr">
-        <h1 class="hh1">
-          Тестування по функціях JavaScript <br>
-          <div class="test">
-           <router-link to="/testing">
-            <button class="button">Розпочати тестування</button> 
-             </router-link>
-          </div>
-          
-        </h1>
-      </div>
-    </div>
+<template>
+  <div class="container">
+    <h2>Список всіх тестів</h2>
+    <ul>
+      <li v-for="test in tests" :key="test.id">
+        <router-link :to="`testing/${test.id}`">
+          <h2>{{ test.title }}</h2>
+        </router-link>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-    export default {
-        name:'HomePage',
-        
-        
-    }
-    
+import firebase from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
+
+export default {
+  name: "HomePage",
+  data() {
+    return {
+      tests: [],
+    };
+  },
+  methods: {
+    async getTests() {
+      const querySnapshot = await getDocs(collection(firebase.db, "tests"));
+
+      querySnapshot.forEach((doc) => {
+        this.tests.push({ ...doc.data(), id: doc.id });
+      });
+    },
+  },
+  mounted() {
+    this.getTests();
+  },
+};
 </script>
 
-<style>
+<style scoped>
 .all {
   background-color: PeachPuff;
   height: 100vh;
@@ -33,7 +45,7 @@ o<template>
   justify-content: center;
   align-items: center;
 }
-.hh1{
+.hh1 {
   margin-top: 100px;
 }
 .wrapper {
@@ -48,14 +60,11 @@ o<template>
   height: 25vh;
 }
 
-.test{
+.test {
   display: flex;
   justify-content: center;
-  margin-top: 91px;
- 
-
 }
-.buton{
+.buton {
   color: black; /* Колір тексту */
   background-color: lightgrey; /* Колір фону */
 }

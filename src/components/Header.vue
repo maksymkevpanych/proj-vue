@@ -2,10 +2,10 @@
   <header>
     <nav>
       <router-link to="/">
-        <button class="button">Головна</button>
+        Головна
       </router-link>
       <router-link v-if="user.role === 'admin'" to="/create">
-        <button class="button">Створити тест</button>
+        Створити тест
       </router-link>
 
       <div style="margin-left: auto" v-if="user.isLoggedIn">

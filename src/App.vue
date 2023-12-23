@@ -29,4 +29,14 @@ export default {
 body {
   margin: 0;
 }
+
+a {
+  color: black;
+  padding: 4px;
+}
+a:hover {
+  color: brown;
+}
+button {
+}
 </style>

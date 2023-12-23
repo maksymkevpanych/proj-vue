@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="container">
     <h1>Вхід</h1>
 
-    <div>
+    <div class="form-container">
       <label>
         <span>Пошта</span>
         <input v-model="email" />
@@ -38,3 +38,28 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+label {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-container {
+  width: 40%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+h1 {
+  text-align: center;
+}
+
+button {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+}
+</style>

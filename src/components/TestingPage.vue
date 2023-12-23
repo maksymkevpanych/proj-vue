@@ -1,17 +1,26 @@
 <template>
-  <div class="container">
-    <QuestionComponent></QuestionComponent>
+  <div >
+    <h1>{{ test.title }}</h1>
+    <ul>
+      <li v-for="question in test.questions " :key=question> 
+        {{ question.text }}
+         <ul>
+          <li v-for="answer in question.answers " :key="answer">{{ answer.text }}</li>
+         </ul>
+      </li>
+     
+    </ul>
   </div>
 </template>
 
 <script>
-import QuestionComponent from "./QuestionComponent.vue";
+
 import firebase from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 
 export default {
   components: {
-    QuestionComponent,
+    
   },
 
   data() {
@@ -43,7 +52,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh; /* Optional: Adjust the height based on your design */
+  height: 100vh; 
   background-color: PeachPuff;
 }
 </style>

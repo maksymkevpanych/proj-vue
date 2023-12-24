@@ -64,8 +64,5 @@ export default {
   display: flex;
   justify-content: center;
 }
-.buton {
-  color: black; /* Колір тексту */
-  background-color: lightgrey; /* Колір фону */
-}
+
 </style>

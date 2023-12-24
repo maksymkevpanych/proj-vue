@@ -19,7 +19,7 @@ export default {
 <style>
 body {
   min-height: 100vh;
-  background-color: PeachPuff;
+  background-color: rgb(241, 212, 235);
 
 }
 
@@ -36,11 +36,10 @@ body {
 
 a {
   color: black;
-  padding: 4px;
+  padding: 2px;
 }
 a:hover {
-  color: brown;
+  color: grey;
 }
-button {
-}
+
 </style>

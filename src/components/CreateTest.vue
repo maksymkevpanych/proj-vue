@@ -61,7 +61,7 @@
       <button @click="createQuestion">Створити питання</button>
     </ul>
 
-    <button @click="createTest">Завершити свторення тесту</button>
+    <button @click="createTest" class="endBtn">Завершити свторення тесту</button>
   </div>
 </template>
 
@@ -168,17 +168,21 @@ export default {
 
 <style>
 .test-item {
-  background-color: rgb(189, 189, 189);
+  background-color: white;
   border-radius: 5px;
   padding: 20px;
   margin-top: 20px;
+  border:2px solid black;
+  
+  
 }
 
 .form-item {
-  background-color: rgb(189, 189, 189);
+  background-color: white;
   padding: 20px;
   margin-top: 30px;
   border-radius: 5px;
+  border:2px solid black;
 }
 .label-wrapper {
   display: flex;
@@ -200,13 +204,31 @@ input,
 button {
   padding: 5px;
   border-radius: 5px;
-  border: 1px solid rgb(189, 189, 189);
+  cursor: pointer;
+  border: black 2px solid;
+  color: black;
+  background-color: white;
+}
+button:hover {
+  background-color:black;
+  color:white;
+  transition-delay: 0.1s; 
 }
 input {
   margin: 0;
+  border: black 2px solid;
 }
 p {
   margin: 0;
   margin-top: 10px;
+}
+li{
+  
+}
+.endBtn{
+  border: 2px solid black;
+  border-radius:5px;
+  background-color:rgb(122, 25, 122);
+  color:white;
 }
 </style>

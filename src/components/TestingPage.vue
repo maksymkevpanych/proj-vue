@@ -26,10 +26,16 @@
     <ul>
       <li v-for="(answer, answerIndex) in question.answers" :key="answerIndex">
         <div v-if="question.multi">
-          <p :style="{ color: answer.selected && answer.truly ? 'green' : 'red', 'background-color': answer.selected ? (answer.truly ? 'springgreen' : 'coral') : '' }">{{ answer.text }}</p>
+          <p :style="{ 
+            color: (answer.selected && answer.truly) ? 'green' : (!answer.selected ? 'red' : ''), 
+            'background-color': answer.selected ? (answer.truly ? 'springgreen' : 'coral') : '' 
+          }">{{ answer.text }}</p>
         </div>
         <div v-else>
-          <p :style="{ color: answer.selected && answer.truly ? 'green' : 'red', 'background-color': answer.selected ? (answer.truly ? 'springgreen' : 'coral') : '' }">{{ answer.text }}</p>
+          <p :style="{ 
+            color: (answer.selected && answer.truly) ? 'green' : (answer.selected ? 'red' : ''), 
+            'background-color': answer.selected ? (answer.truly ? 'springgreen' : 'coral') : '' 
+          }">{{ answer.text }}</p>
         </div>
       </li>
     </ul>
@@ -126,7 +132,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: PeachPuff;
+  background-color: rgb(241, 212, 235);
 }
 .question {
   background-color: white;
@@ -143,8 +149,15 @@ ul {
   padding: 0px;
 }
 button{
-  background-color: white;
+  background-color:rgb(122, 25, 122) ;
   border: solid black 1px;
   border-radius: 5px;
+  cursor: pointer;
+  color:white;
+  
+}
+button:hover {
+  color:white;
+  background-color: black;
 }
 </style>

@@ -1,11 +1,11 @@
 <template>
   <header >
     <nav>
-      <router-link to="/">
-        <h3>Головна</h3>
+      <router-link class="link" to="/">
+       Головна
       </router-link>
-      <router-link v-if="user.role === 'admin'" to="/create">
-        <h3>Створити тест</h3>
+      <router-link class="link" v-if="user.role === 'admin'" to="/create">
+        Створити тест
         
       </router-link>
 
@@ -40,7 +40,7 @@ export default {
 nav {
   display: flex;
   align-items: center;
-  padding: 20px 0;
+  padding: 20px;
 }
 p {
   margin: 0;
@@ -56,14 +56,18 @@ button{
   background-color: rgb(122, 25, 122);
   color: white;
 }
-h3{
+.link {
   color:white;
   background-color:rgb(122, 25, 122);
   border: 2px solid black;
   border-radius: 7px;
+  margin-right: 10px;
 }
-h3:hover{
+.link:hover{
   background-color:black;
   transition-delay: 0.1s; 
+}
+a {
+  text-decoration: none;
 }
 </style>

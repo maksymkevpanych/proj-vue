@@ -1,13 +1,12 @@
 <template>
-  <div class="container">
-    <h1 class="log">Вхід
-      <div class="form-container">
+  <div class="">
+
+    <div class="form-container">
+      <h1 class="log">Вхід</h1>
+
       <button @click="signInAsUser">Увійти як користувач</button>
       <button @click="signInAsAdmin">Увійти як адміністратор</button>
     </div>
-    </h1>
-
-    
   </div>
 </template>
 
@@ -54,10 +53,17 @@ label {
 }
 
 .form-container {
-  width: 40%;
+  width: 60%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+
+  margin-top: 10%;
+  border: 2px solid black;
+  background-color: whitesmoke;
+  border-radius: 10px;
+
+  padding: 20px;
 }
 
 h1 {
@@ -77,10 +83,7 @@ button {
 button:hover {
   background-color: black;
 }
-.log{
-  margin-top: 10%;
-  border: 2px solid black;
-  background-color: whitesmoke;
-  border-radius:10px ;
+.log {
+
 }
 </style>

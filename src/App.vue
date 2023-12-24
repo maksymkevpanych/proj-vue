@@ -22,7 +22,9 @@ body {
   background-color: rgb(241, 212, 235);
 
 }
-
+button {
+  padding: 5px;
+}
 .container {
   padding: 2%;
 }
@@ -36,7 +38,7 @@ body {
 
 a {
   color: black;
-  padding: 2px;
+  padding: 5px;
 }
 a:hover {
   color: grey;
